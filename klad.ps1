@@ -18,7 +18,7 @@ https://www.strava.com/api/v3/athlete/activities?access_token=access_token_from_
 https://www.strava.com/oauth/token?client_id=your_client_id&client_secret=your_client_secret&refresh_token=your_refresh_token_from_previous_step&grant_type=refresh_token
 
 
-
+write-host "bla"
 
 
 https://www.strava.com/oauth/token?client_id=52753&client_secret=63c0d4c5e6662fef0d2474921f1b9f9bf7b1a289&code=b275248e74e105bafeb87086a36be578297e5309&grant_type=authorization_code

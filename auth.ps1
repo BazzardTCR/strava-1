@@ -16,7 +16,7 @@ $refresh_token = '780372a3a3bb4a6fe56b143df30923db40c085af' #this code is static
     $refreshtoken = $chararry[4]
 
 
-StravaAuth
+
 $accesstoken
 $accesstoken
 $expiresat 
