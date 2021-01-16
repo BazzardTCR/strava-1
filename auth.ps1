@@ -23,7 +23,7 @@ $expiresat
 $expiresin 
 $refreshtoken 
 
-https://www.strava.com/api/v3/athlete/activities?page=2&per_page=100&access_token=3b31dcb8ffc64c3f4983a3f7be6db43e561d0972
+https://www.strava.com/api/v3/athlete/activities?page=2&per_page=100&access_token=$accesstoken
 
 
 $act_url = "https://www.strava.com/api/v3/athlete/activities?access_token=$accesstoken"
