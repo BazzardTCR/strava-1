@@ -4,7 +4,7 @@ $user = "root";
 $pass = "secret";
 $db = "strava";
 //function for refreshing the access_token
-function AuthToken (int $clientId){
+function refreshAuthToken (int $clientId){
 
   global $host, $user, $pass, $db;
   $conn = new mysqli($host,$user,$pass,$db);
@@ -28,6 +28,7 @@ function AuthToken (int $clientId){
   } else {
     echo "0 results";
   }
+  $conn->close(); 
 
   $curl = curl_init();
 
@@ -61,24 +62,44 @@ function storeAccessToken($clientId, $accessToken){
   if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
   }
-  $sql = "UPDATE auth SET accessToken='$accessToken' WHERE clientId=$clientId";
- # $sql = "INSERT INTO auth (ClientId, refreshToken, clientSecret)
-  #VALUES ('52753', '780372a3a3bb4a6fe56b143df30923db40c085af', '63c0d4c5e6662fef0d2474921f1b9f9bf7b1a289')";
-
-  if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully";
+  
+  $sqlUpdate = "UPDATE auth SET accessToken='$accessToken' WHERE clientId=$clientId";
+  $sqlGetAccessToken = "SELECT accessToken FROM auth WHERE clientId=$clientId";
+  $resultAccesToken = $conn->query($sqlGetAccessToken);
+  
+  if ($resultAccesToken->num_rows > 0) {
+    
+    while($row = $resultAccesToken->fetch_assoc()) {
+    $accessTokenDB =  $row["accessToken"]; 
+       }
   } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "0 results";
+  }
+  $conn->close(); 
+  //compare access token from db and from curl, if different update.
+  if ($accessToken =! $accessTokenDB) {
+    if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+    }
+    if ($conn->query($sqlUpdate) === TRUE) {
+      echo "Access Token updated";
+    } else {
+      echo "Error: " . $sqlUpdate . "<br>" . $conn->error;
+    }
+    $conn->close(); 
+  } else {
+    echo "Access Token already up 2 date:)";
   }
 
- $conn->close(); 
+
+
 }
 
 
-$accessToken = AuthToken("52753");
+$accessToken = refreshAuthToken("52753");
 
 storeAccessToken("52753", $accessToken);
-echo $accessToken;
+echo "<br> new access code $accessToken";
 
 ?>
 
