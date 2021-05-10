@@ -75,9 +75,10 @@ function storeAccessToken($clientId, $accessToken){
   } else {
     echo "0 results";
   }
-  $conn->close(); 
+ // $conn->close(); 
+  echo "Token from the db = $accessTokenDB<br>";
   //compare access token from db and from curl, if different update.
-  if ($accessToken =! $accessTokenDB) {
+  if ($accessToken != $accessTokenDB) {
     if ($conn->connect_error) {
       die("Connection failed: " . $conn->connect_error);
     }
@@ -86,7 +87,7 @@ function storeAccessToken($clientId, $accessToken){
     } else {
       echo "Error: " . $sqlUpdate . "<br>" . $conn->error;
     }
-    $conn->close(); 
+   // $conn->close(); 
   } else {
     echo "Access Token already up 2 date:)";
   }
@@ -95,10 +96,10 @@ function storeAccessToken($clientId, $accessToken){
 
 }
 
+//52753 -> clientID
+$accessToken = refreshAuthToken($_POST["clienID"]);
 
-$accessToken = refreshAuthToken("52753");
-
-storeAccessToken("52753", $accessToken);
+storeAccessToken($_POST["clienID"], $accessToken);
 echo "<br> new access code $accessToken";
 
 ?>

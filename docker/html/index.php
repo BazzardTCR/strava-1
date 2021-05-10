@@ -1,14 +1,10 @@
-<?php
-$host = "mysql-server";
-$user = "root";
-$pass = "secret";
-$db = "strava";
-try {
-    $conn = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
- 
-    echo "Connected successfully";
-} catch(PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-}
-?>
+<html>
+<body>
+
+<form action="auth.php" method="post">
+clientid: <input type="text" name="clienID"><br>
+<input type="submit">
+</form>
+
+</body>
+</html> 
