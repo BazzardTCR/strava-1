@@ -41,7 +41,7 @@ function storeAccessToken($clientId, $accessToken){
 }
 
 //function for refreshing the access_token
-function refreshAuthToken (int $clientId){
+function refreshAuthToken ($clientId){
   $dbConn = dbConnection();
 
   $sql = "SELECT ClientId, refreshToken, clientSecret FROM auth WHERE clientId=$clientId";
@@ -85,18 +85,19 @@ function refreshAuthToken (int $clientId){
 
 function getAccessToken (int $clientId){
   $dbConn = dbConnection();
-  $sql = "SELECT ClientId, refreshToken, clientSecret FROM auth WHERE clientId=$clientId";
+  $sql = "SELECT accessToken FROM auth WHERE clientId=$clientId";
   $result = $dbConn->query($sql);
 
   if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
-     # echo "clientid: " . $row["ClientId"]. " - refreshToken: " . $row["refreshToken"]. "  - ClientSecret: " . $row["clientSecret"]. "<br>";
-      $accessToken =  $row["accessToken"]; // 42
+     
+      $accessToken =  $row["accessToken"]; 
       return $accessToken;
     }
+
   } else {
-    echo "0 results";
+    echo "(getaccesstoken) could not get receive accesToken for clientid $clientId";
   }
 
   mysqli_close($dbConn);
@@ -105,13 +106,14 @@ function getAccessToken (int $clientId){
 
 
 function initRideLoad($clientId){
-  $accessToken = getAccessToken();
+  $accessToken = getAccessToken($clientId);
   error_reporting(E_ALL);
   ini_set('display_errors', 1);
   $curl = curl_init();
-  
+  $page = 1;
+  while($response1 !="Array ( ) "){
   curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://www.strava.com/api/v3/athlete/activities?page=1&per_page=10&access_token=$accessToken",
+    CURLOPT_URL => "https://www.strava.com/api/v3/athlete/activities?page=$page&per_page=10&access_token=$accessToken",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
@@ -128,7 +130,7 @@ function initRideLoad($clientId){
   //nice print of json /array in php(line below)
   #echo '<pre>'; print_r($response1); echo '</pre>';
   //loops throuch the curl data page
-  
+ // print_r ($response1);
   foreach ($response1 as $value){
       //maps variable
       $id = $value->id;
@@ -166,27 +168,21 @@ function initRideLoad($clientId){
   
       echo "id = $id name= $name athlete =$athleteID distance =$distance moving_time = $moving_time elapsed_time $elapsed_time type $type startdate = $start_date start_local =$start_data_local  timezome = $timezone trainer = $trainer commute= $commute manual = $manual Gear= $gear_id athlete id $athleteID<br>";
       //database variable
-      $servername = "mysql-server";
-      $username = "root";
-      $password = "secret";
-      $dbname = "strava";
-      $conn = new mysqli($servername, $username, $password, $dbname);
-      // Check connection
-      if ($conn->connect_error) {
-          die("Connection failed: " . $conn->connect_error);
-      }
-      $stmt = $conn->prepare("INSERT INTO activities (id, athleteID, name, distance, moving_time, elapsed_time, type, start_date, start_date_local, timezone, trainer, commute, manual, gear_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-      echo $conn->error;
+      $dbConn = dbConnection();
+
+      $stmt = $dbConn->prepare("INSERT INTO activities (id, athleteID, name, distance, moving_time, elapsed_time, type, start_date, start_date_local, timezone, trainer, commute, manual, gear_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+      echo $dbConn->error;
       $stmt->bind_param("iisdiissssiiis", $id, $athleteID, $name, $distance, $moving_time, $elapsed_time, $type, $start_date, $start_data_local, $timezone, $trainer, $commute, $manual, $gear_id );
       
       $stmt->execute(); 
       echo "New records stored in database <br>";
       $stmt->close();
-      $conn->close();
+      $dbConn->close();
       
   }
-  
-
+   
+  $page++;
+  }
 
 }
 
