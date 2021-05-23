@@ -110,10 +110,11 @@ function initRideLoad($clientId){
   error_reporting(E_ALL);
   ini_set('display_errors', 1);
   $curl = curl_init();
+  unset($page);
   $page = 1;
   while($response1 !="Array ( ) "){
   curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://www.strava.com/api/v3/athlete/activities?page=$page&per_page=10&access_token=$accessToken",
+    CURLOPT_URL => "https://www.strava.com/api/v3/athlete/activities?page=$page&per_page=30&access_token=$accessToken",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_MAXREDIRS => 10,
@@ -130,7 +131,7 @@ function initRideLoad($clientId){
   //nice print of json /array in php(line below)
   #echo '<pre>'; print_r($response1); echo '</pre>';
   //loops throuch the curl data page
- // print_r ($response1);
+   print_r ($response1);
   foreach ($response1 as $value){
       //maps variable
       $id = $value->id;
